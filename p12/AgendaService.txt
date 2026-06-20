@@ -1,0 +1,21 @@
+///click la pachetul services
+
+package com.example.phoneagendavalidator.services
+
+import com.example.phoneagendavalidator.interfaces.IAgendaService
+import com.example.phoneagendavalidator.pojo.Person
+import org.springframework.stereotype.Service
+import java.util.concurrent.ConcurrentHashMap
+
+@Service
+class AgendaService : IAgendaService {
+    private val agenda = ConcurrentHashMap<Int, Person>()
+    private var idCounter = 1
+
+    override fun addPerson(person: Person): Boolean {
+        person.id = idCounter++
+        agenda[person.id] = person
+        println("[DATABASE] Persoana ${person.firstName} a fost salvată cu ID-ul ${person.id}.")
+        return true
+    }
+}

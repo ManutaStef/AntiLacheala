@@ -1,0 +1,9 @@
+///click la pachetul interfaces
+
+package com.example.phoneagendavalidator.interfaces
+
+import com.example.phoneagendavalidator.pojo.Person
+
+interface IAgendaService {
+    fun addPerson(person: Person): Boolean
+}

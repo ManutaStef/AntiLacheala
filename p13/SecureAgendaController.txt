@@ -1,0 +1,38 @@
+///click la pachetul controllers
+
+package com.example.phoneagendacrypto.controllers
+
+import com.example.phoneagendacrypto.services.EncryptionOrchestratorService
+import com.example.phoneagendacrypto.pojo.Person
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+
+@RestController
+class SecureAgendaController {
+
+    @Autowired
+    private lateinit var orchestrator: EncryptionOrchestratorService
+
+    // 1. Salvare persoană cu cheia securizată
+    @PostMapping("/person")
+    fun createSecurePerson(@RequestBody person: Person): ResponseEntity<Person> {
+        val savedPerson = orchestrator.registerSecurePerson(person)
+        return ResponseEntity(savedPerson, HttpStatus.CREATED)
+    }
+
+    // 2. Verificare potrivire cod (Simulare match din laborator)
+    @GetMapping("/person/{id}/verify")
+    fun verifyPersonCode(
+        @PathVariable id: Int,
+        @RequestParam code: String
+    ): ResponseEntity<String> {
+        val isMatch = orchestrator.verifyAccess(id, code)
+        return if (isMatch) {
+            ResponseEntity("Potrivire de succes! Cod valid.", HttpStatus.OK)
+        } else {
+            ResponseEntity("Eroare: Codul de acces nu se potrivește cu hash-ul stocat.", HttpStatus.FORBIDDEN)
+        }
+    }
+}

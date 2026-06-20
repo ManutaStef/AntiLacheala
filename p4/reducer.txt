@@ -1,0 +1,38 @@
+import sys
+
+def main():
+    cuvant_curent = None
+    contor_curent = 0
+    cuvant = None
+
+    # Citim datele venite din mapper, gata sortate
+    for linie in sys.stdin:
+        linie = linie.strip()
+        
+        if '\t' not in linie:
+            continue
+            
+        # Despărțim linia după caracterul TAB
+        cuvant, contor_str = linie.split('\t', 1)
+
+        try:
+            contor = int(contor_str)
+        except ValueError:
+            continue
+
+        # Dacă este același cuvânt, adunăm numărul de apariții
+        if cuvant_curent == cuvant:
+            contor_curent += contor
+        else:
+            # Dacă s-a schimbat cuvântul, îl afișăm pe cel anterior finalizat
+            if cuvant_curent is not None:
+                print(f"{cuvant_curent}\t{contor_curent}")
+            cuvant_curent = cuvant
+            contor_curent = contor
+
+    # Afișăm și ultimul cuvânt procesat la finalul buclei
+    if cuvant_curent == cuvant and cuvant_curent is not None:
+        print(f"{cuvant_curent}\t{contor_curent}")
+
+if __name__ == "__main__":
+    main()

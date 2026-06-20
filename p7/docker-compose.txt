@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  # Serviciul Orchestrator (Poarta securizată orientată către client)
+  orchestrator-security-service:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+    depends_on:
+      - agenda-core-service
+
+  # Serviciul de Core care reține datele interne ale agendei
+  agenda-core-service:
+    build: .
+    environment:
+      - SERVER_PORT=8081
+    ports:
+      - "8081:8081"

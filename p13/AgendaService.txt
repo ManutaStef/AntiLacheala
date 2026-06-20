@@ -1,0 +1,21 @@
+///click la pachetul services
+
+package com.example.phoneagendacrypto.services
+
+import com.example.phoneagendacrypto.interfaces.IAgendaService
+import com.example.phoneagendacrypto.pojo.Person
+import org.springframework.stereotype.Service
+import java.util.concurrent.ConcurrentHashMap
+
+@Service
+class AgendaService : IAgendaService {
+    private val agenda = ConcurrentHashMap<Int, Person>()
+    private var idCounter = 1
+
+    override fun addPerson(person: Person) {
+        person.id = idCounter++
+        agenda[person.id] = person
+    }
+
+    override fun getPerson(id: Int): Person? = agenda[id]
+}

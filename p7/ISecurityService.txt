@@ -1,0 +1,7 @@
+///click la pachetul interfaces
+
+package com.example.phoneagenda_security.interfaces
+
+interface ISecurityService {
+    fun validateToken(token: String?): Boolean
+}

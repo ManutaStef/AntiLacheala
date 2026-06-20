@@ -1,0 +1,29 @@
+///click la pachetul controllers
+
+package com.example.phoneagendavalidator.controllers
+
+import com.example.phoneagendavalidator.services.ValidationOrchestratorService
+import com.example.phoneagendavalidator.pojo.Person
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+
+@RestController
+class ValidationController {
+
+    @Autowired
+    private lateinit var orchestratorService: ValidationOrchestratorService
+
+    @PostMapping("/person")
+    fun createPerson(@RequestBody person: Person): ResponseEntity<Any> {
+        val isSuccess = orchestratorService.validateAndAddPerson(person)
+        
+        return if (isSuccess) {
+            ResponseEntity("Persoana a fost adăugată cu succes.", HttpStatus.CREATED)
+        } else {
+            // CERINȚĂ BILET: Întoarcerea unui status HTTP adecvat în caz de eroare (400 Bad Request)
+            ResponseEntity("Eroare de validare: Numărul de telefon trebuie să aibă 10 cifre și să înceapă cu 0.", HttpStatus.BAD_REQUEST)
+        }
+    }
+}

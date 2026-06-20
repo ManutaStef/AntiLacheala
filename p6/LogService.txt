@@ -1,0 +1,19 @@
+///click la pachetul services
+
+package com.example.phoneagenda_logger.services
+
+import com.example.phoneagenda_logger.interfaces.ILogService
+import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+@Service
+class LogService : ILogService {
+    private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+
+    override fun logEvent(message: String) {
+        val timestamp = LocalDateTime.now().format(formatter)
+        // CERINȚĂ BILET: Formatul [TIMESTAMP] [INFO] mesaj
+        println("[$timestamp] [INFO] $message")
+    }
+}

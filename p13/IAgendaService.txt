@@ -1,0 +1,10 @@
+///click la pachetul interfaces
+
+package com.example.phoneagendacrypto.interfaces
+
+import com.example.phoneagendacrypto.pojo.Person
+
+interface IAgendaService {
+    fun addPerson(person: Person)
+    fun getPerson(id: Int): Person?
+}

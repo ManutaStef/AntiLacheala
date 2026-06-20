@@ -1,0 +1,56 @@
+///click la pachetul services
+
+package com.example.phoneagendapersistence.services
+
+import com.example.phoneagendapersistence.interfaces.IDatabaseService
+import com.example.phoneagendapersistence.pojo.Person
+import org.springframework.stereotype.Service
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.SQLException
+
+@Service
+class DatabaseService : IDatabaseService {
+    private var connection: Connection? = None
+
+    init {
+        try {
+            // Se creează sau se deschide fișierul bazei de date agenda.db în rădăcina proiectului
+            val url = "jdbc:sqlite:agenda.db"
+            connection = DriverManager.getConnection(url)
+            
+            // Crearea tabelei conform modelului din laboratorul 6
+            val createTableSQL = """
+                CREATE TABLE IF NOT EXISTS person (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    last_name TEXT NOT NULL,
+                    first_name TEXT NOT NULL,
+                    telephone_number TEXT NOT NULL
+                );
+            """.trimIndent()
+            
+            connection?.createStatement()?.use { statement ->
+                statement.execute(createTableSQL)
+            }
+            println("Log: Conexiunea la SQLite a fost inițializată, tabela există.")
+        } catch (e: SQLException) {
+            println("Eroare la inițializarea bazei de date: ${e.message}")
+        }
+    }
+
+    override fun insertPerson(person: Person): Boolean {
+        val insertSQL = "INSERT INTO person(last_name, first_name, telephone_number) VALUES(?, ?, ?)"
+        return try {
+            connection?.prepareStatement(insertSQL)?.use { pstmt ->
+                pstmt.setString(1, person.lastName)
+                pstmt.setString(2, person.firstName)
+                pstmt.setString(3, person.telephoneNumber)
+                pstmt.executeUpdate()
+                true
+            } ?: false
+        } catch (e: SQLException) {
+            println("Eroare la inserarea în baza de date: ${e.message}")
+            false
+        }
+    }
+}

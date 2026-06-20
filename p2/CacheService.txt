@@ -1,0 +1,48 @@
+///click dreapta pe services
+
+package com.example.phoneagendacache.services
+
+import com.example.phoneagendacache.interfaces.IAgendaService
+import com.example.phoneagendacache.interfaces.ICacheService
+import com.example.phoneagendacache.pojo.CacheEntry
+import com.example.phoneagendacache.pojo.Person
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import java.time.Duration
+import java.util.concurrent.ConcurrentHashMap
+
+@Service
+class CacheService : ICacheService {
+
+    @Autowired
+    private lateinit var agendaService: IAgendaService
+
+    // Tabela hash thread-safe folosită ca memorie cache pentru instanțe
+    private val cacheMap = ConcurrentHashMap<Int, CacheEntry>()
+
+    override fun getCachedPerson(id: Int): Person? {
+        val now = LocalDateTime.now()
+        val cachedEntry = cacheMap[id]
+
+        if (cachedEntry != null) {
+            // Se calculează timpul trecut de la salvarea în cache până în prezent
+            val minutesPassed = Duration.between(cachedEntry.timestamp, now).toMinutes()
+            
+            // Dacă cererea apare în primele 30 de minute, întoarcem datele memorate direct
+            if (minutesPassed < 30) {
+                println("[CACHE HITTED] Datele au fost servite direct din memoria cache.")
+                return cachedEntry.person
+            }
+        }
+
+        // Dacă nu se află în cache sau au trecut peste 30 de minute, apelăm serviciul principal de agendă
+        println("[CACHE MISSED/EXPIRED] Se interoghează serviciul de bază AgendaService.")
+        val freshPerson = agendaService.getPerson(id)
+        
+        // Înnoim / adăugăm intrarea în tabela de cache cu noul timestamp curent
+        cacheMap[id] = CacheEntry(freshPerson, now)
+        
+        return freshPerson
+    }
+}

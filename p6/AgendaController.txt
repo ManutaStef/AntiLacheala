@@ -1,0 +1,45 @@
+///click la pachetul controllers
+
+package com.example.phoneagenda_logger.controllers
+
+import com.example.phoneagenda_logger.services.LoggingOrchestratorService
+import com.example.phoneagenda_logger.interfaces.IAgendaService
+import com.example.phoneagenda_logger.interfaces.ILogService
+import com.example.phoneagenda_logger.pojo.Person
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+
+@RestController
+class AgendaController {
+
+    @Autowired
+    private lateinit var orchestratorService: LoggingOrchestratorService
+
+    @Autowired
+    private lateinit var agendaService: IAgendaService
+
+    @Autowired
+    private lateinit var logService: ILogService
+
+    // 1. Endpoint-ul public accesat de client (Orchestrator)
+    @GetMapping("/person/{id}")
+    fun getPerson(@PathVariable id: Int): ResponseEntity<Person?> {
+        val person = orchestratorService.getPersonWithLogging(id)
+        return if (person == null) ResponseEntity(HttpStatus.NOT_FOUND) else ResponseEntity(person, HttpStatus.OK)
+    }
+
+    // 2. Endpoint intern folosit de AgendaService
+    @GetMapping("/agenda/person/{id}")
+    fun getRawPerson(@PathVariable id: Int): Person? {
+        return agendaService.getPerson(id)
+    }
+
+    // 3. Endpoint intern folosit de LogService
+    @PostMapping("/log")
+    fun receiveLog(@RequestParam message: String): ResponseEntity<String> {
+        logService.logEvent(message)
+        return ResponseEntity("Log înregistrat cu succes", HttpStatus.OK)
+    }
+}

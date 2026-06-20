@@ -1,0 +1,7 @@
+///click la pachetul interfaces
+
+package com.example.phoneagendaratelimiter.interfaces
+
+interface IRateLimiterService {
+    fun allowRequest(clientId: String): Boolean
+}

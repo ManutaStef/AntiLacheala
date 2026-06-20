@@ -1,0 +1,10 @@
+///click dreapta pe pojo
+
+package com.example.phoneagendacache.pojo
+
+import java.time.LocalDateTime
+
+data class CacheEntry(
+    val person: Person?,
+    val timestamp: LocalDateTime
+)

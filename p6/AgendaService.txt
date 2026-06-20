@@ -1,0 +1,18 @@
+///click la pachetul services
+
+package com.example.phoneagenda_logger.services
+
+import com.example.phoneagenda_logger.interfaces.IAgendaService
+import com.example.phoneagenda_logger.pojo.Person
+import org.springframework.stereotype.Service
+import java.util.concurrent.ConcurrentHashMap
+
+@Service
+class AgendaService : IAgendaService {
+    private val agenda = ConcurrentHashMap<Int, Person>().apply {
+        put(1, Person(1, "Popescu", "Ion", "0722112233"))
+        put(2, Person(2, "Ionescu", "Vasile", "0744556677"))
+    }
+
+    override fun getPerson(id: Int): Person? = agenda[id]
+}

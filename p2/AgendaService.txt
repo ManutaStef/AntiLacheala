@@ -1,0 +1,27 @@
+///click dreapta pe services
+
+package com.example.phoneagendacache.services
+
+import com.example.phoneagendacache.interfaces.IAgendaService
+import com.example.phoneagendacache.pojo.Person
+import org.springframework.stereotype.Service
+import java.util.concurrent.ConcurrentHashMap
+
+@Service
+class AgendaService : IAgendaService {
+    companion object {
+        val initialAgenda = arrayOf(
+            Person(1, "Popescu", "Ion", "0722112233"),
+            Person(2, "Ionescu", "Vasile", "0744556677"),
+            Person(3, "Vasilescu", "Maria", "0766998811")
+        )
+    }
+
+    private val agenda = ConcurrentHashMap<Int, Person>(
+        initialAgenda.associateBy { person: Person -> person.id }
+    )
+
+    override fun getPerson(id: Int): Person? {
+        return agenda[id]
+    }
+}

@@ -1,0 +1,16 @@
+///click la pachetul services
+
+package com.example.phoneagenda_security.services
+
+import com.example.phoneagenda_security.interfaces.ISecurityService
+import org.springframework.stereotype.Service
+
+@Service
+class SecurityService : ISecurityService {
+    // CERINȚĂ BILET: Token static predefinit pentru autentificare
+    private val secureToken = "Bearer secret-token-123"
+
+    override fun validateToken(token: String?): Boolean {
+        return token != null && token == secureToken
+    }
+}

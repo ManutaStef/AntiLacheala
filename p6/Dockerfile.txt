@@ -1,0 +1,14 @@
+# Pasul 1: Compilarea proiectului folosind Maven și OpenJDK
+FROM maven:3.8.6-openjdk-11-slim AS build
+COPY src /app/src
+COPY pom.xml /app
+RUN mnv -f /app/pom.xml clean package -DskipTests
+
+# Pasul 2: Crearea imaginii finale de rulare (Alpine Linux - minimalistă)
+FROM openjdk:11-jre-slim
+COPY --from=build /app/target/*.jar app.jar
+
+# Expunem portul implicit
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "/app.jar"]

@@ -1,0 +1,10 @@
+///click dreapta pe pojo
+
+package com.example.phoneagendacache.pojo
+
+data class Person(
+    var id: Int = 0,
+    var lastName: String = "",
+    var firstName: String = "",
+    var telephoneNumber: String = ""
+)

@@ -1,0 +1,30 @@
+///click pe services
+
+package com.example.phoneagendavalidator.services
+
+import com.example.phoneagendavalidator.interfaces.IAgendaService
+import com.example.phoneagendavalidator.interfaces.IValidationService
+import com.example.phoneagendavalidator.pojo.Person
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
+
+@Service
+class ValidationOrchestratorService {
+
+    @Autowired
+    private lateinit var validationService: IValidationService
+
+    @Autowired
+    private lateinit var agendaService: IAgendaService
+
+    fun validateAndAddPerson(person: Person): Boolean {
+        // CERINȚĂ BILET: Filtrarea/Validarea datelor în orchestrator
+        if (!validationService.isValidPhoneNumber(person.telephoneNumber)) {
+            println("[VALIDATION FAILED] Numărul ${person.telephoneNumber} nu are 10 cifre sau nu începe cu 0.")
+            return false
+        }
+        
+        // Dacă este valid, trimitem mai departe
+        return agendaService.addPerson(person)
+    }
+}

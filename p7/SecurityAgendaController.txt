@@ -1,0 +1,42 @@
+///click la pachetul controllers
+
+package com.example.phoneagenda_security.controllers
+
+import com.example.phoneagenda_security.services.SecurityOrchestratorService
+import com.example.phoneagenda_security.interfaces.IAgendaService
+import com.example.phoneagenda_security.pojo.Person
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+
+@RestController
+class SecurityAgendaController {
+
+    @Autowired
+    private lateinit var orchestratorService: SecurityOrchestratorService
+
+    @Autowired
+    private lateinit var agendaService: IAgendaService
+
+    // 1. Endpoint public securizat prin Header-ul de Authorization
+    @GetMapping("/person/{id}")
+    fun getSecurePerson(
+        @PathVariable id: Int,
+        @RequestHeader(value = "Authorization", required = false) token: String?
+    ): ResponseEntity<Any> {
+        val (person, isAuthorized) = orchestratorService.secureGetPerson(id, token)
+
+        if (!isAuthorized) {
+            return ResponseEntity("401 Unauthorized: Token static lipsă sau incorect.", HttpStatus.UNAUTHORIZED)
+        }
+
+        return if (person == null) ResponseEntity(HttpStatus.NOT_FOUND) else ResponseEntity(person, HttpStatus.OK)
+    }
+
+    // 2. Endpoint privat intern din container pentru AgendaService
+    @GetMapping("/agenda/person/{id}")
+    fun getRawPerson(@PathVariable id: Int): Person? {
+        return agendaService.getPerson(id)
+    }
+}

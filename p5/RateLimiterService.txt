@@ -1,0 +1,37 @@
+///click la pachetul services
+
+package com.example.phoneagendaratelimiter.services
+
+import com.example.phoneagendaratelimiter.interfaces.IRateLimiterService
+import org.springframework.stereotype.Service
+import java.time.Instant
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
+
+@Service
+class RateLimiterService : IRateLimiterService {
+
+    // Structură thread-safe: IdentificatorClient -> Listă de Timestamp-uri ale cererilor
+    private val requestHistory = ConcurrentHashMap<String, CopyOnWriteArrayList<Instant>>()
+
+    override fun allowRequest(clientId: String): Boolean {
+        val now = Instant.now()
+        val oneMinuteAgo = now.minusSeconds(60)
+
+        // Obținem sau inițializăm lista de cereri pentru clientul curent
+        val timestamps = requestHistory.computeIfAbsent(clientId) { CopyOnWriteArrayList() }
+
+        // Curățăm istoricul: eliminăm cererile mai vechi de 1 minut
+        timestamps.removeIf { timestamp -> timestamp.isBefore(oneMinuteAgo) }
+
+        // CERINȚĂ BILET: Verificăm dacă s-a depășit limita de 10 cereri
+        if (timestamps.size >= 10) {
+            println("[RATE LIMIT] Clientul $clientId a fost BLOCAT. Prea multe cereri într-un minut.")
+            return false
+        }
+
+        // Dacă e validă, adăugăm timestamp-ul curent în istoric și permitem accesul
+        timestamps.add(now)
+        return true
+    }
+}

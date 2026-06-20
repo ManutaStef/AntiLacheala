@@ -1,0 +1,35 @@
+///click pe services
+
+package com.example.phoneagenda_security.services
+
+import com.example.phoneagenda_security.interfaces.ISecurityService
+import com.example.phoneagenda_security.pojo.Person
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
+
+@Service
+class SecurityOrchestratorService {
+
+    @Autowired
+    private lateinit var securityService: ISecurityService
+
+    private val restTemplate = RestTemplate()
+    private val agendaServiceUrl = "http://agenda-core-service:8081/agenda/person/"
+
+    fun secureGetPerson(id: Int, token: String?): Pair<Person?, Boolean> {
+        // 1. Verificăm autentificarea
+        if (!securityService.validateToken(token)) {
+            println("[SECURITY ALERT] Încercare de acces neautorizată cu token invalid!")
+            return Pair(null, false) // Token invalid
+        }
+
+        // 2. Dacă e valid, preluăm datele din microserviciul de bază
+        return try {
+            val person = restTemplate.getForObject("$agendaServiceUrl$id", Person::class.java)
+            Pair(person, true)
+        } catch (e: Exception) {
+            Pair(null, true)
+        }
+    }
+}

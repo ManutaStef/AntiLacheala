@@ -1,0 +1,33 @@
+///click pe services
+
+package com.example.phoneagenda_logger.services
+
+import com.example.phoneagenda_logger.pojo.Person
+import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
+
+@Service
+class LoggingOrchestratorService {
+    private val restTemplate = RestTemplate()
+
+    // URL-urile containerelor Docker din rețeaua internă
+    private val agendaServiceUrl = "http://agenda-service:8081/agenda/person/"
+    private val logServiceUrl = "http://log-service:8082/log?message="
+
+    fun getPersonWithLogging(id: Int): Person? {
+        // CERINȚĂ BILET: Trimiterea mesajului către microserviciul de logging
+        val logMessage = "S-a interogat ID-ul $id"
+        try {
+            restTemplate.postForObject("$logServiceUrl$logMessage", null, String::class.java)
+        } catch (e: Exception) {
+            println("Eroare la trimiterea logului: ${e.message}")
+        }
+
+        // Preluarea resursei din microserviciul agendei
+        return try {
+            restTemplate.getForObject("$agendaServiceUrl$id", Person::class.java)
+        } catch (e: Exception) {
+            null
+        }
+    }
+}

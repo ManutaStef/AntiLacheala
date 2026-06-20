@@ -1,0 +1,9 @@
+FROM maven:3.8.6-openjdk-11-slim AS build
+COPY src /app/src
+COPY pom.xml /app
+RUN mnv -f /app/pom.xml clean package -DskipTests
+
+FROM openjdk:11-jre-slim
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/app.jar"]

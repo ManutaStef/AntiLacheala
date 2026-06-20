@@ -1,0 +1,16 @@
+///click la pachetul services
+
+package com.example.phoneagendavalidator.services
+
+import com.example.phoneagendavalidator.interfaces.IValidationService
+import org.springframework.stereotype.Service
+
+@Service
+class ValidationService : IValidationService {
+    // Expresie regulată: ^0 determină pornirea cu cifra 0, iar \d{9}$ obligă să urmeze fix încă 9 cifre (Total = 10 cifre)
+    private val phoneRegex = Regex("^0\\d{9}$")
+
+    override fun isValidPhoneNumber(phoneNumber: String): Boolean {
+        return phoneNumber.matches(phoneRegex)
+    }
+}

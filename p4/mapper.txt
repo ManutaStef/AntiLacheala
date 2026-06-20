@@ -1,0 +1,22 @@
+import sys
+import re
+
+def main():
+    # Citim linie cu linie din fluxul standard (sys.stdin)
+    for linie in sys.stdin:
+        # Curățăm linia de spații inutile și o transformăm în litere mici
+        linie = linie.strip().lower()
+        
+        # Extragem cuvintele folosind regex, ignorând semnele de punctuație
+        cuvinte = re.findall(r'\b\w+\b', linie)
+        
+        # CERINȚĂ BILET: Filtrare prin funcție lambda pentru lungime >= 3 caractere
+        cuvinte_filtrate = filter(lambda cuvant: len(cuvant) >= 3, cuvinte)
+        
+        # Trimitem spre reducer perechea <cuvânt, 1>
+        for cuvant in cuvinte_filtrate:
+            # Formatul standard cerut de Hadoop Streaming: cheie[TAB]valoare
+            print(f"{cuvant}\t1")
+
+if __name__ == "__main__":
+    main()

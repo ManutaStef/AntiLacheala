@@ -1,0 +1,9 @@
+///click dreapta pe interfaces
+
+package com.example.phoneagendacache.interfaces
+
+import com.example.phoneagendacache.pojo.Person
+
+interface ICacheService {
+    fun getCachedPerson(id: Int): Person?
+}

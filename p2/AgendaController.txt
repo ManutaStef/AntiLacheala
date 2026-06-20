@@ -1,0 +1,28 @@
+///clickdreapta pe controllers
+
+package com.example.phoneagendacache.controllers
+
+import com.example.phoneagendacache.interfaces.ICacheService
+import com.example.phoneagendacache.pojo.Person
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+
+@RestController
+class AgendaController {
+
+    @Autowired
+    private lateinit var cacheService: ICacheService
+
+    @RequestMapping(value = ["/person/{id}"], method = [RequestMethod.GET])
+    fun getPerson(@PathVariable id: Int): ResponseEntity<Person?> {
+        val person = cacheService.getCachedPerson(id)
+        val status = if (person == null) {
+            HttpStatus.NOT_FOUND
+        } else {
+            HttpStatus.OK
+        }
+        return ResponseEntity(person, status)
+    }
+}

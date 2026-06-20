@@ -1,0 +1,29 @@
+///click la pachetul controllers
+
+package com.example.phoneagendapersistence.controllers
+
+import com.example.phoneagendapersistence.interfaces.IAgendaService
+import com.example.phoneagendapersistence.pojo.Person
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+
+@RestController
+class AgendaController {
+
+    @Autowired
+    private lateinit var agendaService: IAgendaService
+
+    // Endpoint de tip POST pentru adăugarea unei persoane
+    @RequestMapping(value = ["/person"], method = [RequestMethod.POST])
+    fun createPerson(@RequestBody person: Person): ResponseEntity<String> {
+        val isSaved = agendaService.addPerson(person)
+        
+        return if (isSaved) {
+            ResponseEntity("Persoana a fost salvata cu succes in baza de date SQLite.", HttpStatus.CREATED)
+        } else {
+            ResponseEntity("Eroare interna la salvarea datelor.", HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+}

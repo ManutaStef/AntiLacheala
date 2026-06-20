@@ -1,0 +1,7 @@
+///click la pachetul interfaces
+
+package com.example.phoneagendavalidator.interfaces
+
+interface IValidationService {
+    fun isValidPhoneNumber(phoneNumber: String): Boolean
+}

@@ -1,0 +1,9 @@
+///click la pachetul interfaces
+
+package com.example.phoneagendaratelimiter.interfaces
+
+import com.example.phoneagendaratelimiter.pojo.Person
+
+interface IAgendaService {
+    fun getPerson(id: Int): Person?
+}

@@ -1,0 +1,21 @@
+///click la pachetul services
+
+package com.example.phoneagendapersistence.services
+
+import com.example.phoneagendapersistence.interfaces.IAgendaService
+import com.example.phoneagendapersistence.interfaces.IDatabaseService
+import com.example.phoneagendapersistence.pojo.Person
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
+
+@Service
+class AgendaService : IAgendaService {
+
+    @Autowired
+    private lateinit var databaseService: IDatabaseService
+
+    override fun addPerson(person: Person): Boolean {
+        // Logica de business apelează serviciul de persistență dedicat
+        return databaseService.insertPerson(person)
+    }
+}

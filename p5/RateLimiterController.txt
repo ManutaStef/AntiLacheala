@@ -1,0 +1,43 @@
+///click la pachetul controllers
+
+package com.example.phoneagendaratelimiter.controllers
+
+import com.example.phoneagendaratelimiter.interfaces.IAgendaService
+import com.example.phoneagendaratelimiter.interfaces.IRateLimiterService
+import com.example.phoneagendaratelimiter.pojo.Person
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+import javax.servlet.http.HttpServletRequest
+
+@RestController
+class RateLimitedController {
+
+    @Autowired
+    private lateinit var rateLimiterService: IRateLimiterService
+
+    @Autowired
+    private lateinit var agendaService: IAgendaService
+
+    @RequestMapping(value = ["/person/{id}"], method = [RequestMethod.GET])
+    fun getPerson(@PathVariable id: Int, request: HttpServletRequest): ResponseEntity<Any> {
+        // Folosim adresa IP a clientului ca identificator unic
+        val clientId = request.remoteAddr
+
+        // Verificăm dacă se permite cererea
+        if (!rateLimiterService.allowRequest(clientId)) {
+            return ResponseEntity(
+                "Too Many Requests. Limita este de 10 cereri pe minut.", 
+                HttpStatus.TOO_MANY_REQUESTS
+            )
+        }
+
+        val person = agendaService.getPerson(id)
+        return if (person == null) {
+            ResponseEntity(HttpStatus.NOT_FOUND)
+        } else {
+            ResponseEntity(person, HttpStatus.OK)
+        }
+    }
+}

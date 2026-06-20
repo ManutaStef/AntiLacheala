@@ -1,0 +1,9 @@
+///click la pachetul interfaces
+
+package com.example.phoneagendapersistence.interfaces
+
+import com.example.phoneagendapersistence.pojo.Person
+
+interface IAgendaService {
+    fun addPerson(person: Person): Boolean
+}
